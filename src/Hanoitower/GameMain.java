@@ -15,6 +15,9 @@ public class GameMain implements Runnable {
 	Stack<Integer> stackRight; 
 	Stack<Integer> stackMoveCnt; 
 	Object p_obj;					// stack에서 뺀 plate를 저장할 곳
+	final String LOC_LEFT = "left";
+	final String LOC_CENTER = "center";
+	final String LOC_RIGHT = "right";
 	
 	int resolution_width = 1365;
 	int resolution_height = 768;
@@ -88,12 +91,7 @@ public class GameMain implements Runnable {
 		playSec = 0;
 		changeIcon = 0;			
 		
-		switch(p_num){
-			case 3:{	plate_is_3();	break;	}
-			case 4:{	plate_is_4();	break;	}
-			case 5:{	plate_is_5();	break;	}
-			case 6:{	plate_is_6();	break;	}
-		}
+		initPlate(p_num, 78, 429, 470, 70);
 		
 		moveCnt=0;
 		sel_x = 78;
@@ -194,235 +192,91 @@ public class GameMain implements Runnable {
 			}
 		});
 	}
-	
-	public void plate_is_3(){
-		int mix_type=(int)(Math.random() * 6);
-		switch(mix_type) {
+
+	/**
+	 * 자리, plate 초기화
+	 * @param pSize
+	 * @param pXLoc
+	 * @param incrX
+	 * @param pYLoc
+	 * @param incrY
+	 */
+	private void initPlate(int pSize, int pXLoc, int incrX, int pYLoc, int incrY) {
+		int mix_type = (int) (Math.random() * 6);
+
+		switch (mix_type) {
 			case 0: {
-				goal_check=1;		
-				stackLeft.push(3);	 	p_x[3] =78; p_y[3]=610;				
-				stackLeft.push(2);		p_x[2] =78; p_y[2]=540; 
-				stackLeft.push(1);	 	p_x[1] =78; p_y[1]=470;
+				goal_check = 1;
+				initStackLocation(LOC_LEFT, pSize);
+				initPlateLocation(pSize, pXLoc, pYLoc, incrY);
 				break;
 			}
 			case 1: {
-				goal_check=2;		
-				stackLeft.push(3);	 	p_x[3] =78; p_y[3]=610;				
-				stackLeft.push(2);		p_x[2] =78; p_y[2]=540; 
-				stackLeft.push(1);	 	p_x[1] =78; p_y[1]=470;
+				goal_check = 2;
+				initStackLocation(LOC_LEFT, pSize);
+				initPlateLocation(pSize, pXLoc, pYLoc, incrY);
 				break;
 			}
 			case 2: {
-				goal_check=0;
-				stackCenter.push(3);	 	p_x[3] =507; p_y[3]=610;				
-				stackCenter.push(2);		p_x[2] =507; p_y[2]=540; 
-				stackCenter.push(1);	 	p_x[1] =507; p_y[1]=470; 
+				goal_check = 0;
+				initStackLocation(LOC_CENTER, pSize);
+				initPlateLocation(pSize, pXLoc + incrX, pYLoc, incrY);
 				break;
 			}
 			case 3: {
-				goal_check=2;
-				stackCenter.push(3);	 	p_x[3] =507; p_y[3]=610;				
-				stackCenter.push(2);		p_x[2] =507; p_y[2]=540; 
-				stackCenter.push(1);	 	p_x[1] =507; p_y[1]=470; 
+				goal_check = 2;
+				initStackLocation(LOC_CENTER, pSize);
+				initPlateLocation(pSize, pXLoc + incrX, pYLoc, incrY);
 				break;
 			}
 			case 4: {
-				goal_check=0;
-				stackRight.push(3);	 	p_x[3] =936; p_y[3]=610;				
-				stackRight.push(2);		p_x[2] =936; p_y[2]=540; 
-				stackRight.push(1);	 	p_x[1] =936; p_y[1]=470; 
+				goal_check = 0;
+				initStackLocation(LOC_RIGHT, pSize);
+				initPlateLocation(pSize, pXLoc + (incrX * 2), pYLoc, incrY);
 				break;
 			}
 			case 5: {
-				goal_check=1;
-				stackRight.push(3);	 	p_x[3] =936; p_y[3]=610;				
-				stackRight.push(2);		p_x[2] =936; p_y[2]=540; 
-				stackRight.push(1);	 	p_x[1] =936; p_y[1]=470; 
+				goal_check = 1;
+				initStackLocation(LOC_RIGHT, pSize);
+				initPlateLocation(pSize, pXLoc + (incrX * 2), pYLoc, incrY);
 				break;
 			}
 		}
 	}
-	
-	public void plate_is_4(){
-		int mix_type=(int)(Math.random() * 6);	
-		switch(mix_type) {
-			case 0: {
-				goal_check=1;
-				stackLeft.push(4);		p_x[4] =78; p_y[4]=610;
-				stackLeft.push(3);		p_x[3] =78; p_y[3]=540;
-				stackLeft.push(2);		p_x[2] =78; p_y[2]=470;
-				stackLeft.push(1);		p_x[1] =78; p_y[1]=400;
-				break;
+
+	/**
+	 * 자리에 있는 plate 초기화 
+	 * @param loc 판 위치
+	 * @param size 사이즈
+	 */
+	private void initStackLocation(String loc, int size) {
+		for(int i = size; i >= 1; i--) {
+			if(LOC_LEFT.equals(loc)){
+				stackLeft.push(i);
 			}
-			case 1: {
-				goal_check=2;
-				stackLeft.push(4);		p_x[4] =78; p_y[4]=610;
-				stackLeft.push(3);		p_x[3] =78; p_y[3]=540;
-				stackLeft.push(2);		p_x[2] =78; p_y[2]=470;
-				stackLeft.push(1);		p_x[1] =78; p_y[1]=400;
-				break;
+			else if (LOC_CENTER.equals(loc)) {
+				stackCenter.push(i);
 			}
-			case 2: {
-				goal_check=0;
-				stackCenter.push(4);		p_x[4] =507; p_y[4]=610;
-				stackCenter.push(3);		p_x[3] =507; p_y[3]=540;
-				stackCenter.push(2);		p_x[2] =507; p_y[2]=470;
-				stackCenter.push(1);		p_x[1] =507; p_y[1]=400;
-				break;
-			}
-			case 3: {
-				goal_check=2;
-				stackCenter.push(4);		p_x[4] =507; p_y[4]=610;
-				stackCenter.push(3);		p_x[3] =507; p_y[3]=540;
-				stackCenter.push(2);		p_x[2] =507; p_y[2]=470;
-				stackCenter.push(1);		p_x[1] =507; p_y[1]=400;
-				break;
-			}
-			case 4: {
-				goal_check=0;
-				stackRight.push(4);		p_x[4] =936; p_y[4]=610;
-				stackRight.push(3);		p_x[3] =936; p_y[3]=540;
-				stackRight.push(2);		p_x[2] =936; p_y[2]=470;
-				stackRight.push(1);		p_x[1] =936; p_y[1]=400;
-				break;
-			}
-			case 5: {
-				goal_check=1;
-				stackRight.push(4);		p_x[4] =936; p_y[4]=610;
-				stackRight.push(3);		p_x[3] =936; p_y[3]=540;
-				stackRight.push(2);		p_x[2] =936; p_y[2]=470;
-				stackRight.push(1);		p_x[1] =936; p_y[1]=400;
-				break;
+			else if (LOC_RIGHT.equals(loc)) {
+				stackRight.push(i);
 			}
 		}
 	}
-	
-	public void plate_is_5(){
-		int mix_type=(int)(Math.random() * 6);
-		switch(mix_type) {
-			case 0: {
-				goal_check=1;
-				stackLeft.push(5);		p_x[5] =78; p_y[5]=610;
-				stackLeft.push(4);		p_x[4] =78; p_y[4]=540;
-				stackLeft.push(3);		p_x[3] =78; p_y[3]=470;
-				stackLeft.push(2);		p_x[2] =78; p_y[2]=400;
-				stackLeft.push(1);		p_x[1] =78; p_y[1]=330;
-				break;
-			}
-			case 1: {
-				goal_check=2;
-				stackLeft.push(5);		p_x[5] =78; p_y[5]=610;
-				stackLeft.push(4);		p_x[4] =78; p_y[4]=540;
-				stackLeft.push(3);		p_x[3] =78; p_y[3]=470;
-				stackLeft.push(2);		p_x[2] =78; p_y[2]=400;
-				stackLeft.push(1);		p_x[1] =78; p_y[1]=330;
-				break;
-			}
-			case 2: {
-				goal_check=0;
-				stackCenter.push(5);		p_x[5] =507; p_y[5]=610;
-				stackCenter.push(4);		p_x[4] =507; p_y[4]=540;
-				stackCenter.push(3);		p_x[3] =507; p_y[3]=470;
-				stackCenter.push(2);		p_x[2] =507; p_y[2]=400;
-				stackCenter.push(1);		p_x[1] =507; p_y[1]=330;
-				break;
-			}
-			case 3: {
-				goal_check=2;
-				stackCenter.push(5);		p_x[5] =507; p_y[5]=610;
-				stackCenter.push(4);		p_x[4] =507; p_y[4]=540;
-				stackCenter.push(3);		p_x[3] =507; p_y[3]=470;
-				stackCenter.push(2);		p_x[2] =507; p_y[2]=400;
-				stackCenter.push(1);		p_x[1] =507; p_y[1]=330;
-				break;
-			}
-			case 4: {
-				goal_check=0;
-				stackRight.push(5);		p_x[5] =936; p_y[5]=610;
-				stackRight.push(4);		p_x[4] =936; p_y[4]=540;
-				stackRight.push(3);		p_x[3] =936; p_y[3]=470;
-				stackRight.push(2);		p_x[2] =936; p_y[2]=400;
-				stackRight.push(1);		p_x[1] =936; p_y[1]=330;
-				break;
-			}
-			case 5: {
-				goal_check=1;
-				stackRight.push(5);		p_x[5] =936; p_y[5]=610;
-				stackRight.push(4);		p_x[4] =936; p_y[4]=540;
-				stackRight.push(3);		p_x[3] =936; p_y[3]=470;
-				stackRight.push(2);		p_x[2] =936; p_y[2]=400;
-				stackRight.push(1);		p_x[1] =936; p_y[1]=330;
-				break;
-			}
+
+	/**
+	 * plate 위치 초기화
+	 * @param size
+	 * @param x
+	 * @param y
+	 * @param yIncr y좌표 증가폭
+	 */
+	private void initPlateLocation(int size, int x, int y, int yIncr){
+		for (int i = 1; i <= size; i++) {
+			p_x[i] = x;
+			p_y[i] = y + (yIncr * (i - 1));
 		}
 	}
-	
-	public void plate_is_6(){
-		int mix_type=(int)(Math.random() * 6);	
-		switch(mix_type) {
-			case 0: {
-				goal_check=1;
-				stackLeft.push(6);		p_x[6] =78; p_y[6]=610;
-				stackLeft.push(5);		p_x[5] =78; p_y[5]=540;
-				stackLeft.push(4);		p_x[4] =78; p_y[4]=470;
-				stackLeft.push(3);		p_x[3] =78; p_y[3]=400;
-				stackLeft.push(2);		p_x[2] =78; p_y[2]=330;
-				stackLeft.push(1);		p_x[1] =78; p_y[1]=260;
-				break;
-			}
-			case 1: {
-				goal_check=2;
-				stackLeft.push(6);		p_x[6] =78; p_y[6]=610;
-				stackLeft.push(5);		p_x[5] =78; p_y[5]=540;
-				stackLeft.push(4);		p_x[4] =78; p_y[4]=470;
-				stackLeft.push(3);		p_x[3] =78; p_y[3]=400;
-				stackLeft.push(2);		p_x[2] =78; p_y[2]=330;
-				stackLeft.push(1);		p_x[1] =78; p_y[1]=260;
-				break;
-			}
-			case 2: {
-				goal_check=0;
-				stackCenter.push(6);		p_x[6] =507; p_y[6]=610;
-				stackCenter.push(5);		p_x[5] =507; p_y[5]=540;
-				stackCenter.push(4);		p_x[4] =507; p_y[4]=470;
-				stackCenter.push(3);		p_x[3] =507; p_y[3]=400;
-				stackCenter.push(2);		p_x[2] =507; p_y[2]=330;
-				stackCenter.push(1);		p_x[1] =507; p_y[1]=260;
-				break;
-			}
-			case 3: {
-				goal_check=2;
-				stackCenter.push(6);		p_x[6] =507; p_y[6]=610;
-				stackCenter.push(5);		p_x[5] =507; p_y[5]=540;
-				stackCenter.push(4);		p_x[4] =507; p_y[4]=470;
-				stackCenter.push(3);		p_x[3] =507; p_y[3]=400;
-				stackCenter.push(2);		p_x[2] =507; p_y[2]=330;
-				stackCenter.push(1);		p_x[1] =507; p_y[1]=260;
-				break;
-			}
-			case 4: {
-				goal_check=0;
-				stackRight.push(6);		p_x[6] =936; p_y[6]=610;
-				stackRight.push(5);		p_x[5] =936; p_y[5]=540;
-				stackRight.push(4);		p_x[4] =936; p_y[4]=470;
-				stackRight.push(3);		p_x[3] =936; p_y[3]=400;
-				stackRight.push(2);		p_x[2] =936; p_y[2]=330;
-				stackRight.push(1);		p_x[1] =936; p_y[1]=260;
-				break;
-			}
-			case 5: {
-				goal_check=1;
-				stackRight.push(6);		p_x[6] =936; p_y[6]=610;
-				stackRight.push(5);		p_x[5] =936; p_y[5]=540;
-				stackRight.push(4);		p_x[4] =936; p_y[4]=470;
-				stackRight.push(3);		p_x[3] =936; p_y[3]=400;
-				stackRight.push(2);		p_x[2] =936; p_y[2]=330;
-				stackRight.push(1);		p_x[1] =936; p_y[1]=260;
-				break;
-			}
-		}
-	}
-	
+
 	public void MoveLeft(){
 		if(sel_x  >  80) {			// 왼쪽화살표를 누르면
 			sel_x -= 429;
@@ -497,16 +351,29 @@ public class GameMain implements Runnable {
 		isSelecting++;
 		
 		if(isSelecting == 1) {		// plate를 잡는다.
+
 			switch(sel_location) {
 				case 0:	{
-					if(stackLeft.isEmpty())	{isSelecting=0; break;}
-					else if(!stackLeft.isEmpty()) p_obj=stackLeft.pop(); break; }
+					if(stackLeft.isEmpty())
+						isSelecting=0;
+					else
+						p_obj=stackLeft.pop();
+					break;
+				}
 				case 1:	{
-					if(stackCenter.isEmpty()) {isSelecting=0; break;}
-					else if(!stackCenter.isEmpty()) p_obj=stackCenter.pop(); break; }
+					if(stackCenter.isEmpty())
+						isSelecting=0;
+					else
+						p_obj=stackCenter.pop();
+					break;
+				}
 				case 2:	{
-					if(stackRight.isEmpty()) {isSelecting=0; break;}
-					else if(!stackRight.isEmpty()) p_obj=stackRight.pop(); break; }
+					if(stackRight.isEmpty())
+						isSelecting=0;
+					else
+						p_obj=stackRight.pop();
+					break;
+				}
 			}
 			
 			for(int i=p_num; i >= 1; i--) {
