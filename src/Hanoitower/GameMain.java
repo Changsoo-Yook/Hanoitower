@@ -18,6 +18,7 @@ public class GameMain implements Runnable {
 	final String LOC_LEFT = "left";
 	final String LOC_CENTER = "center";
 	final String LOC_RIGHT = "right";
+	String[] locArr = { LOC_LEFT, LOC_CENTER, LOC_RIGHT };
 	
 	int resolution_width = 1365;
 	int resolution_height = 768;
@@ -202,147 +203,106 @@ public class GameMain implements Runnable {
 	 * @param incrY
 	 */
 	private void initPlate(int pSize, int pXLoc, int incrX, int pYLoc, int incrY) {
-		int mix_type = (int) (Math.random() * 6);
+		goal_check = (int) (Math.random() * 3);
 
-		switch (mix_type) {
-			case 0: {
-				goal_check = 1;
-				initStackLocation(LOC_LEFT, pSize);
-				initPlateLocation(pSize, pXLoc, pYLoc, incrY);
-				break;
-			}
-			case 1: {
-				goal_check = 2;
-				initStackLocation(LOC_LEFT, pSize);
-				initPlateLocation(pSize, pXLoc, pYLoc, incrY);
-				break;
-			}
-			case 2: {
-				goal_check = 0;
-				initStackLocation(LOC_CENTER, pSize);
-				initPlateLocation(pSize, pXLoc + incrX, pYLoc, incrY);
-				break;
-			}
-			case 3: {
-				goal_check = 2;
-				initStackLocation(LOC_CENTER, pSize);
-				initPlateLocation(pSize, pXLoc + incrX, pYLoc, incrY);
-				break;
-			}
-			case 4: {
-				goal_check = 0;
-				initStackLocation(LOC_RIGHT, pSize);
-				initPlateLocation(pSize, pXLoc + (incrX * 2), pYLoc, incrY);
-				break;
-			}
-			case 5: {
-				goal_check = 1;
-				initStackLocation(LOC_RIGHT, pSize);
-				initPlateLocation(pSize, pXLoc + (incrX * 2), pYLoc, incrY);
-				break;
-			}
-		}
+		initLocation(locArr[goal_check], pSize, pXLoc, pYLoc, incrX, incrY);
 	}
-
+	
 	/**
 	 * 자리에 있는 plate 초기화 
 	 * @param loc 판 위치
 	 * @param size 사이즈
 	 */
-	private void initStackLocation(String loc, int size) {
+	private void initLocation(String loc, int size, int pXLoc, int ypYLoc, int incrX, int incrY) {
 		for(int i = size; i >= 1; i--) {
 			if(LOC_LEFT.equals(loc)){
 				stackLeft.push(i);
+				initPlateLocation(size, pXLoc, ypYLoc, incrY);
 			}
 			else if (LOC_CENTER.equals(loc)) {
 				stackCenter.push(i);
+				initPlateLocation(size, pXLoc + incrX, ypYLoc, incrY);
 			}
 			else if (LOC_RIGHT.equals(loc)) {
 				stackRight.push(i);
+				initPlateLocation(size, pXLoc + (incrX * 2), ypYLoc, incrY);
 			}
 		}
 	}
-
+	
 	/**
 	 * plate 위치 초기화
+	 * 
 	 * @param size
 	 * @param x
 	 * @param y
-	 * @param yIncr y좌표 증가폭
+	 * @param incrY y좌표 증가폭
 	 */
-	private void initPlateLocation(int size, int x, int y, int yIncr){
+	private void initPlateLocation(int size, int pXLoc, int ypYLoc, int incrY){
+		int multiple = 1;
+		
+		if (size == 4)
+			multiple = 2;
+		else if (size == 5)
+			multiple = 3;
+		else if (size == 6)
+			multiple = 4;
+
 		for (int i = 1; i <= size; i++) {
-			p_x[i] = x;
-			p_y[i] = y + (yIncr * (i - 1));
+			p_x[i] = pXLoc;
+			p_y[i] = ypYLoc + (incrY * (i - multiple));
 		}
 	}
 
 	public void MoveLeft(){
+		int p_cnt = 0;
+
 		if(sel_x  >  80) {			// 왼쪽화살표를 누르면
 			sel_x -= 429;
-			if(sel_location >= 0)		sel_location--;
+			if(sel_location >= 0)
+				sel_location--;
 			
-			switch(sel_location) {
-				case 0: {
-					int p_cnt = stackLeft.size();
-					if(p_cnt > 0)		sel_y = 610-((70*p_cnt)-70);		// 위치에 plate 갯수만큼 sel_y를 올린다.
-					else 					sel_y = 610;
-					
-					if(isSelecting == 1) {
-						sel_y = 610-(70*p_cnt);
-						p_x[p_sel_num] = sel_x;
-						p_y[p_sel_num] = sel_y;
-					}
-					break;
-				}
-				case 1: {
-					int p_cnt = stackCenter.size();
-					if(p_cnt > 0)		sel_y = 610-((70*p_cnt)-70);		// 위치에 plate 갯수만큼 sel_y를 올린다.
-					else					sel_y = 610;
-					
-					if(isSelecting == 1) {
-						sel_y = 610-(70*p_cnt);
-						p_x[p_sel_num] = sel_x;
-						p_y[p_sel_num] = sel_y;									
-					}
-					break;
-				}
+			if(sel_location == 0)
+				p_cnt = stackLeft.size();
+			else if(sel_location == 1)
+				p_cnt = stackCenter.size();
+
+			if(p_cnt > 0)
+				sel_y = 610-((70*p_cnt)-70);		// 위치에 plate 갯수만큼 sel_y를 올린다.
+			else 
+				sel_y = 610;
+			
+			if(isSelecting == 1) {
+				sel_y = 610-(70*p_cnt);
+				p_x[p_sel_num] = sel_x;
+				p_y[p_sel_num] = sel_y;
 			}
 		}
 	}
 	
 	public void MoveRight(){
+		int p_cnt = 0;
+
 		if(sel_x < 930) {			// 오른쪽 화살표를 누르면
 			sel_x += 429;			// selector를 이동시키기
-			if(sel_location <= 2) sel_location++;
 
-			switch(sel_location) {			// selector의 위치는 stack의 갯수에 의해 결정된다.
-				case 1: {
-					int p_cnt = stackCenter.size();
-						if(p_cnt > 0)		sel_y = 610-((70*p_cnt)-70);		// 위치에 plate 갯수만큼 sel_y를 올린다.
-						else 					sel_y = 610;
-					
-					if(isSelecting==1) {
-						sel_y = 610-(70*p_cnt);
-						p_x[p_sel_num] = sel_x;
-						p_y[p_sel_num] = sel_y;
-						return;
-					}
-				break;
-				}
-				case 2: {
-					int p_cnt = stackRight.size();
-						if(p_cnt > 0)		sel_y = 610-((70*p_cnt)-70);		// 위치에 plate 갯수만큼 sel_y를 올린다.
-						else					sel_y = 610;
-					
-					if(isSelecting==1) {
-						sel_y = 610-(70*p_cnt);
-						p_x[p_sel_num] = sel_x;
-						p_y[p_sel_num] = sel_y;
-						return;
-					}
-				break;
-				}
+			if(sel_location <= 2)
+				sel_location++;
+
+			if (sel_location == 1)
+				p_cnt = stackCenter.size();
+			else if (sel_location == 2)
+				p_cnt = stackRight.size();
+
+			if (p_cnt > 0)
+				sel_y = 610 - ((70 * p_cnt) - 70); // 위치에 plate 갯수만큼 sel_y를 올린다.
+			else
+				sel_y = 610;
+
+			if (isSelecting == 1) {
+				sel_y = 610 - (70 * p_cnt);
+				p_x[p_sel_num] = sel_x;
+				p_y[p_sel_num] = sel_y;
 			}
 		}
 	}
